@@ -1,6 +1,6 @@
 package com.blockgoblin31.cc_tweaks.blocks.blockentities;
 
-import com.blockgoblin31.cc_tweaks.blocks.ModFlowerBlocks;
+import com.blockgoblin31.cc_tweaks.blocks.ModBlocks;
 import com.hollingsworth.arsnouveau.api.source.ISpecialSourceProvider;
 import com.hollingsworth.arsnouveau.api.util.SourceUtil;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
@@ -18,10 +18,9 @@ import vazkii.botania.api.block_entity.RadiusDescriptor;
 public class SourceBloom extends GeneratingFlowerBlockEntity {
     private static final int RANGE = 3;
     private boolean draining;
-    private int source = 0;
 
     public SourceBloom(BlockPos pos, BlockState state) {
-        super(ModFlowerBlocks.SOURCEBLOOM, pos, state);
+        super(ModBlockEntities.SOURCEBLOOM.get(), pos, state);
     }
 
     @Override
@@ -46,10 +45,10 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
         }
         int transferRate = 200;
 
-        if (this.level.getGameTime() % 20 == 0 && this.getSource() < getMaxSource()) {
-            ISpecialSourceProvider takePos = SourceUtil.takeSource(worldPosition, level, 3, Math.min(transferRate, this.getSource() - getMaxSource()));
+        if (this.level.getGameTime() % 20 == 0 && this.getMana() < getMaxMana()) {
+            ISpecialSourceProvider takePos = SourceUtil.takeSource(worldPosition, level, 3, Math.min(transferRate, this.getMaxMana() - getMana()));
             if (takePos != null) {
-                this.addSource(transferRate);
+                this.addMana(transferRate);
                 EntityFlyingItem item = new EntityFlyingItem(level, takePos.getCurrentPos().above(), worldPosition, 255, 50, 80)
                         .withNoTouch();
                 item.setDistanceAdjust(2f);
@@ -59,16 +58,11 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
                     updateBlock();
                 }
             } else {
-                this.addSource(10);
                 if (draining) {
                     draining = false;
                     updateBlock();
                 }
             }
-        }
-        while (this.getSource() >= 10 && this.getMana() <= this.getMaxMana() - 10) {
-            this.addMana(10);
-            this.addSource(-10);
         }
     }
 
@@ -82,9 +76,6 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
     public double getZ() {
         return this.worldPosition.getZ();
     }
-    private int getMaxSource() {
-        return 500;
-    }
     public boolean updateBlock() {
         if(level != null) {
             BlockState state = level.getBlockState(worldPosition);
@@ -93,23 +84,6 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
             return true;
         }
         return false;
-    }
-    private int getSource() {
-        return source;
-    }
-    public int setSource(int source) {
-        if (this.source == source)
-            return this.source;
-        this.source = source;
-        if (this.source > this.getMaxSource())
-            this.source = this.getMaxSource();
-        if (this.source < 0)
-            this.source = 0;
-        updateBlock();
-        return this.source;
-    }
-    private void addSource(int toAdd) {
-        setSource(getSource() + toAdd);
     }
 
     @Override

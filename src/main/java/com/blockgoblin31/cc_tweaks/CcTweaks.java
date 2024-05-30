@@ -1,6 +1,8 @@
 package com.blockgoblin31.cc_tweaks;
 
-import com.blockgoblin31.cc_tweaks.blocks.ModFlowerBlocks;
+import com.blockgoblin31.cc_tweaks.blocks.ModBlocks;
+import com.blockgoblin31.cc_tweaks.blocks.blockentities.ModBlockEntities;
+import com.blockgoblin31.cc_tweaks.items.ModItems;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -26,8 +28,10 @@ public class CcTweaks {
     private static final Logger LOGGER = LogUtils.getLogger();
     public CcTweaks() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        ModItems.register(modEventBus);
+        ModBlocks.register(modEventBus);
+        ModBlockEntities.register(modEventBus);
 
-        registryInit();
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
@@ -37,21 +41,6 @@ public class CcTweaks {
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         //ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
-    }
-
-    //copying how botania does its flowers because I cant figure out how else to do them
-    private static void registryInit() {
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-        bind(Registry.BLOCK_REGISTRY, ModFlowerBlocks::registerFlowerBlocks);
-        bind(Registry.ITEM_REGISTRY, ModFlowerBlocks::registerFlowerBlockItems);
-        bind(Registry.BLOCK_ENTITY_TYPE_REGISTRY, ModFlowerBlocks::registerTileEntities);
-    }
-    private static <T> void bind(ResourceKey<Registry<T>> registry, Consumer<BiConsumer<T, ResourceLocation>> source) {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener((RegisterEvent event) -> {
-            if (registry.equals(event.getRegistryKey())) {
-                source.accept((t, rl) -> event.register(registry, rl, () -> t));
-            }
-        });
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
