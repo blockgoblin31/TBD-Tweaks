@@ -1,12 +1,10 @@
-package com.blockgoblin31.cc_tweaks.blocks.blockentities;
+package com.blockgoblin31.cc_tweaks.blocks.botania;
 
-import com.blockgoblin31.cc_tweaks.blocks.ModBlocks;
 import com.hollingsworth.arsnouveau.api.source.ISpecialSourceProvider;
 import com.hollingsworth.arsnouveau.api.util.SourceUtil;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
 import com.hollingsworth.arsnouveau.client.particle.ParticleLineData;
 import com.hollingsworth.arsnouveau.client.particle.ParticleUtil;
-import com.hollingsworth.arsnouveau.common.entity.EntityFlyingItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,7 +18,7 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
     private boolean draining;
 
     public SourceBloom(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.SOURCEBLOOM.get(), pos, state);
+        super(ModFlowerBlocks.SOURCEBLOOM, pos, state);
     }
 
     @Override
@@ -49,10 +47,6 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
             ISpecialSourceProvider takePos = SourceUtil.takeSource(worldPosition, level, 3, Math.min(transferRate, this.getMaxMana() - getMana()));
             if (takePos != null) {
                 this.addMana(transferRate);
-                EntityFlyingItem item = new EntityFlyingItem(level, takePos.getCurrentPos().above(), worldPosition, 255, 50, 80)
-                        .withNoTouch();
-                item.setDistanceAdjust(2f);
-                level.addFreshEntity(item);
                 if (!draining) {
                     draining = true;
                     updateBlock();
@@ -76,14 +70,12 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
     public double getZ() {
         return this.worldPosition.getZ();
     }
-    public boolean updateBlock() {
+    public void updateBlock() {
         if(level != null) {
             BlockState state = level.getBlockState(worldPosition);
             level.sendBlockUpdated(worldPosition, state, state, 3);
             setChanged();
-            return true;
         }
-        return false;
     }
 
     @Override
