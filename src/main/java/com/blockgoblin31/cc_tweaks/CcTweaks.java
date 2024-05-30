@@ -1,5 +1,6 @@
 package com.blockgoblin31.cc_tweaks;
 
+import com.blockgoblin31.cc_tweaks.blocks.ModBlocks;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -18,6 +19,8 @@ public class CcTweaks {
     private static final Logger LOGGER = LogUtils.getLogger();
     public CcTweaks() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        ModBlocks.register(modEventBus);
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);

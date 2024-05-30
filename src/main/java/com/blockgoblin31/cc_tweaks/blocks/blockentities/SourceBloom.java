@@ -1,5 +1,6 @@
 package com.blockgoblin31.cc_tweaks.blocks.blockentities;
 
+import com.blockgoblin31.cc_tweaks.blocks.ModBlocks;
 import com.hollingsworth.arsnouveau.api.source.ISpecialSourceProvider;
 import com.hollingsworth.arsnouveau.api.util.SourceUtil;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
@@ -21,7 +22,7 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
     private int source = 0;
 
     public SourceBloom(BlockPos pos, BlockState state) {
-        super(type, pos, state);
+        super(ModBlocks.SOURCEBLOOM, pos, state);
     }
 
     @Override
