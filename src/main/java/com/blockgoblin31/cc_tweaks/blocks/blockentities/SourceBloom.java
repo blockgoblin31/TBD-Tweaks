@@ -1,6 +1,6 @@
 package com.blockgoblin31.cc_tweaks.blocks.blockentities;
 
-import com.blockgoblin31.cc_tweaks.blocks.ModBlocks;
+import com.blockgoblin31.cc_tweaks.blocks.ModFlowerBlocks;
 import com.hollingsworth.arsnouveau.api.source.ISpecialSourceProvider;
 import com.hollingsworth.arsnouveau.api.util.SourceUtil;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
@@ -9,7 +9,6 @@ import com.hollingsworth.arsnouveau.client.particle.ParticleUtil;
 import com.hollingsworth.arsnouveau.common.entity.EntityFlyingItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +21,7 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
     private int source = 0;
 
     public SourceBloom(BlockPos pos, BlockState state) {
-        super(ModBlocks.SOURCEBLOOM, pos, state);
+        super(ModFlowerBlocks.SOURCEBLOOM, pos, state);
     }
 
     @Override
@@ -48,7 +47,7 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
         int transferRate = 200;
 
         if (this.level.getGameTime() % 20 == 0 && this.getSource() < getMaxSource()) {
-            ISpecialSourceProvider takePos = SourceUtil.takeSource(worldPosition, level, 2, Math.min(200, this.getSource() - getMaxSource()));
+            ISpecialSourceProvider takePos = SourceUtil.takeSource(worldPosition, level, 3, Math.min(transferRate, this.getSource() - getMaxSource()));
             if (takePos != null) {
                 this.addSource(transferRate);
                 EntityFlyingItem item = new EntityFlyingItem(level, takePos.getCurrentPos().above(), worldPosition, 255, 50, 80)
@@ -67,8 +66,13 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
                 }
             }
         }
+        while (this.getSource() >= 10 && this.getMana() <= this.getMaxMana() - 10) {
+            this.addMana(10);
+            this.addSource(-10);
+        }
     }
 
+    //stuff copied over from the InfusionTile to get the tick function to work
     public double getX() {
         return this.worldPosition.getX();
     }
