@@ -17,6 +17,8 @@ import java.util.function.Supplier;
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, CcTweaks.MODID);
 
+    public static final RegistryObject<Block> MANA_SOURCE_LINK = registerBlock("mana_sourcelink", ManaSourcelinkBlock::new);
+
     private static RegistryObject<Block> registerBlock(String name, Supplier<Block> block) {
         ModItems.queueItemRegistry(name, () -> new BlockItem(block.get(), new Item.Properties().tab(ModCreativeTab.TAB)));
         return BLOCKS.register(name, block);
