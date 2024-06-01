@@ -8,7 +8,7 @@ import vazkii.botania.api.mana.ManaReceiver;
 
 public class ManaSourcelinkBlockEntity extends SourcelinkTile implements ManaReceiver {
     public ManaSourcelinkBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.MANA_SOURCE_LINK.get(), pos, state);
+        super(ModBlockEntities.MANA_SOURCE_LINK, pos, state);
     }
 
     @Override

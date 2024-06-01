@@ -5,9 +5,9 @@ import com.blockgoblin31.cc_tweaks.blocks.blockentities.ModBlockEntities;
 import com.blockgoblin31.cc_tweaks.blocks.botania.ModFlowerBlocks;
 import com.blockgoblin31.cc_tweaks.items.ModItems;
 import com.mojang.logging.LogUtils;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -16,11 +16,12 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import java.util.Objects;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(CcTweaks.MODID)
@@ -29,12 +30,13 @@ public class CcTweaks {
     private static final Logger LOGGER = LogUtils.getLogger();
     public CcTweaks() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.addListener(CcTweaks::registerEvents);
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
 
 
-        registryInit();
+        ModFlowerBlocks.botaniaRegistryInit();
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
@@ -46,19 +48,19 @@ public class CcTweaks {
         //ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
-    //copying how botania does its flowers because I cant figure out how else to do them. I know this is cursed.
-    //never touch again
-    private static void registryInit() {
-        bind(Registry.BLOCK_REGISTRY, ModFlowerBlocks::registerFlowerBlocks);
-        bind(Registry.ITEM_REGISTRY, ModFlowerBlocks::registerFlowerBlockItems);
-        bind(Registry.BLOCK_ENTITY_TYPE_REGISTRY, ModFlowerBlocks::registerTileEntities);
-    }
-    private static <T> void bind(ResourceKey<Registry<T>> registry, Consumer<BiConsumer<T, ResourceLocation>> source) {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener((RegisterEvent event) -> {
-            if (registry.equals(event.getRegistryKey())) {
-                source.accept((t, rl) -> event.register(registry, rl, () -> t));
-            }
-        });
+    public static void registerEvents(RegisterEvent event) {
+        if (event.getRegistryKey().equals(ForgeRegistries.Keys.BLOCKS)) {
+            IForgeRegistry<Block> registry = Objects.requireNonNull(event.getForgeRegistry());
+            ModBlocks.onBlockRegistry(registry);
+        }
+        if (event.getRegistryKey().equals(ForgeRegistries.Keys.ITEMS)) {
+            IForgeRegistry<Item> registry = Objects.requireNonNull(event.getForgeRegistry());
+            ModItems.onBlockItemRegistry(registry);
+        }
+        if (event.getRegistryKey().equals(ForgeRegistries.Keys.BLOCK_ENTITY_TYPES)) {
+            IForgeRegistry<BlockEntityType<?>> registry = Objects.requireNonNull(event.getForgeRegistry());
+            ModBlockEntities.onBlockEntityRegistry(registry);
+        }
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

@@ -8,16 +8,15 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.*;
 
 import java.util.function.Supplier;
 
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, CcTweaks.MODID);
 
-    public static final RegistryObject<Block> MANA_SOURCE_LINK = registerBlock("mana_sourcelink", ManaSourcelinkBlock::new);
+    @ObjectHolder(value = CcTweaks.MODID + ":mana_sourcelink", registryName = "minecraft:block")
+    public static Block MANA_SOURCE_LINK;
 
     private static RegistryObject<Block> registerBlock(String name, Supplier<Block> block) {
         ModItems.queueItemRegistry(name, () -> new BlockItem(block.get(), new Item.Properties().tab(ModCreativeTab.TAB)));
@@ -26,5 +25,10 @@ public class ModBlocks {
 
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);
+    }
+
+    //for ars stuff
+    public static void onBlockRegistry(IForgeRegistry<Block> registry) {
+        registry.register(CcTweaks.MODID + ":mana_sourcelink", new ManaSourcelinkBlock());
     }
 }
