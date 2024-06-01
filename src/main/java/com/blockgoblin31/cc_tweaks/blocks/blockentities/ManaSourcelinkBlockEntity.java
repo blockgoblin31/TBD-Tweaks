@@ -7,8 +7,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import vazkii.botania.api.mana.ManaReceiver;
 
 public class ManaSourcelinkBlockEntity extends SourcelinkTile implements ManaReceiver {
+
+
     public ManaSourcelinkBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.MANA_SOURCE_LINK, pos, state);
+    }
+
+    @Override
+    public int getMaxSource() {
+        return 3000;
     }
 
     @Override

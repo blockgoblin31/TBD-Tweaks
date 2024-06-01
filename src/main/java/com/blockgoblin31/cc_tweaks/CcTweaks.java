@@ -10,9 +10,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -23,6 +25,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegisterEvent;
 import org.slf4j.Logger;
+import vazkii.botania.api.BotaniaForgeCapabilities;
+import vazkii.botania.api.mana.ManaReceiver;
+import vazkii.botania.forge.CapabilityUtil;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -48,6 +53,7 @@ public class CcTweaks {
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.addGenericListener(BlockEntity.class, CcTweaks::attachBlockEntityCapabilities);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         //ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -93,5 +99,11 @@ public class CcTweaks {
                 source.accept((t, rl) -> event.register(registry, rl, () -> t));
             }
         });
+    }
+    private static void attachBlockEntityCapabilities(AttachCapabilitiesEvent<BlockEntity> event) {
+        BlockEntity be = event.getObject();
+        if (be.getType() == ModBlockEntities.MANA_SOURCE_LINK) {
+            event.addCapability(new ResourceLocation(CcTweaks.MODID, "mana_receiver"), CapabilityUtil.makeProvider(BotaniaForgeCapabilities.MANA_RECEIVER, (ManaReceiver) be));
+        }
     }
 }
