@@ -5,6 +5,9 @@ import com.blockgoblin31.cc_tweaks.blocks.blockentities.ModBlockEntities;
 import com.blockgoblin31.cc_tweaks.blocks.botania.ModFlowerBlocks;
 import com.blockgoblin31.cc_tweaks.items.ModItems;
 import com.mojang.logging.LogUtils;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -22,6 +25,8 @@ import net.minecraftforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(CcTweaks.MODID)
@@ -30,13 +35,13 @@ public class CcTweaks {
     private static final Logger LOGGER = LogUtils.getLogger();
     public CcTweaks() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        botaniaRegistryInit(modEventBus);
         modEventBus.addListener(CcTweaks::registerEvents);
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
 
 
-        ModFlowerBlocks.botaniaRegistryInit();
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
@@ -73,5 +78,20 @@ public class CcTweaks {
         public static void onClientSetup(FMLClientSetupEvent event) {
 
         }
+    }
+
+    //copying how botania does its flowers because I cant figure out how else to do them. I know this is cursed.
+    //never touch again
+    public static void botaniaRegistryInit(IEventBus bus) {
+        bind(bus, Registry.BLOCK_REGISTRY, ModFlowerBlocks::registerFlowerBlocks);
+        bind(bus, Registry.ITEM_REGISTRY, ModFlowerBlocks::registerFlowerBlockItems);
+        bind(bus, Registry.BLOCK_ENTITY_TYPE_REGISTRY, ModFlowerBlocks::registerTileEntities);
+    }
+    private static <T> void bind(IEventBus bus, ResourceKey<Registry<T>> registry, Consumer<BiConsumer<T, ResourceLocation>> source) {
+        bus.addListener((RegisterEvent event) -> {
+            if (registry.equals(event.getRegistryKey())) {
+                source.accept((t, rl) -> event.register(registry, rl, () -> t));
+            }
+        });
     }
 }
