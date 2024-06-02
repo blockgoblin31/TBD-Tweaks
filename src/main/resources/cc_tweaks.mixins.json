@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.blockgoblin31.cc_tweaks.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "cc_tweaks.mixin.refmap.json",
+  "mixins": [
+    "BotanyPotMixin"
+  ],
+  "client":[
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8.4"
+}

@@ -40,7 +40,7 @@ public class ManaSourcelinkBlockEntity extends SourcelinkTile implements ManaRec
 
     @Override
     public void receiveMana(int mana) {
-        addSource(mana);
+        addSource(mana/5);
     }
 
     @Override

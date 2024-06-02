@@ -46,7 +46,7 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
         if (this.level.getGameTime() % 20 == 0 && this.getMana() < getMaxMana()) {
             ISpecialSourceProvider takePos = SourceUtil.takeSource(worldPosition, level, 3, Math.min(transferRate, this.getMaxMana() - getMana()));
             if (takePos != null) {
-                this.addMana(transferRate);
+                this.addMana(transferRate * 5);
                 if (!draining) {
                     draining = true;
                     updateBlock();
@@ -80,7 +80,7 @@ public class SourceBloom extends GeneratingFlowerBlockEntity {
 
     @Override
     public int getMaxMana() {
-        return 500;
+        return 2500;
     }
 
     @Override
